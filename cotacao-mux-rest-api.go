@@ -19,12 +19,14 @@ type cotacao struct {
 }
 
 func main() {
-	router := mux.NewRouter()
-	router.HandleFunc("/info", hello).Methods("GET")
-	router.HandleFunc("/cotacao", getCotacao).Methods("GET")
+	router := mux.NewRouter().StrictSlash(true)
+
+	sub := router.PathPrefix("/api/v1").Subrouter()
+	sub.HandleFunc("/info", hello).Methods("GET")
+	sub.HandleFunc("/cotacao", getCotacao).Methods("GET")
 
 	fmt.Println("Initializing server...")
-	log.Fatal(http.ListenAndServe("localhost:3000", router))
+	log.Fatal(http.ListenAndServe(":3000", router))
 }
 
 func hello(writer http.ResponseWriter, request *http.Request) {
