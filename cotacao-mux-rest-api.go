@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"log"
 	"encoding/json"
-	"io/ioutil"
 	"regexp"
 	"errors"
+	"io"
+	"bytes"
 )
 
 const cotacaoEndpoint = "https://ptax.bcb.gov.br/ptax_internet/consultarUltimaCotacaoDolar.do"
@@ -47,9 +48,10 @@ func retornaCotacaoEndpoint() (content []byte) {
 
 	defer response.Body.Close()
 
-	content, err = ioutil.ReadAll(response.Body)
-	checkError(err)
-	return
+	var buffer bytes.Buffer
+	io.Copy(&buffer, response.Body)
+
+	return buffer.Bytes()
 }
 
 func formatResponse(content []byte) (value cotacao) {
